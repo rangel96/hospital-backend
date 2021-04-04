@@ -1,7 +1,10 @@
+// Import packs installs
 const { response } = require('express');
 const encrypt = require('bcryptjs');
 
+// Import packs creates
 const UsuarioI = require('../models/usuario');
+const { generateJWT } = require("../helpers/jwt");
 
 
 const getUsuarios = async(req, res) => {
@@ -23,7 +26,7 @@ const createUsuario = async(req, res = response) => {
         const existeEmail = await UsuarioI.findOne({ email });
         if (existeEmail) {
             // Mensaje de error tipo JSON
-            res.json({
+            return res.json({
                 status: false,
                 msg: 'Email ya fue registrado'
             });
@@ -38,15 +41,20 @@ const createUsuario = async(req, res = response) => {
         // Guardar usuario en la BD
         await usuario.save();
 
+        // Generate JWT
+        const token = await generateJWT(usuario._id);
+
         // Mensaje tipo JSON
         res.json({
             status:true,
             msg: 'Crear usuario',
-            data: usuario
+            data: usuario,
+            token
         });
     } catch (e) {
+        // Mensajes de error en consola y por JSON
         console.log(e);
-        res.json({
+        return res.json({
             status:false,
             msg: 'Ocurrió un error al registrar al usuario',
         });
@@ -65,7 +73,7 @@ const updateUsuario = async(req, res = response) => {
         // Verificar que el usuario existe en la BD por busqueda del id
         const usuarioExiste = await UsuarioI.findById(uid);
         if (!usuarioExiste) {
-        res.json({
+        return res.json({
             status:false,
             msg: 'El id no se encuentra en la BD',
         });
@@ -81,7 +89,7 @@ const updateUsuario = async(req, res = response) => {
             const existeEmail = await UsuarioI.findOne({ email });
             if (existeEmail) {
                 // Mensaje de error tipo JSON
-                res.json({
+                return res.json({
                     status: false,
                     msg: 'Existe un registro con ese correo'
                 });
@@ -105,8 +113,9 @@ const updateUsuario = async(req, res = response) => {
         });
 
     } catch (e) {
+        // Mensajes de error en consola y por JSON
         console.log(e);
-        res.json({
+         return res.json({
             status:false,
             msg: 'Ocurrió un error al actualizar el usuario',
         });
@@ -119,14 +128,13 @@ const deleteUsuario = async(req, res = response) => {
 
     // Obtener el id del parametro
     const uid = req.params.id;
-    console.log(uid);
 
     try {
 
         // Verificar que el usuario existe en la BD por busqueda del id
         const usuarioExiste = await UsuarioI.findById(uid);
         if (!usuarioExiste) {
-            res.json({
+            return res.json({
                 status:false,
                 msg: 'El id no se encuentra en la BD',
             });
@@ -144,8 +152,9 @@ const deleteUsuario = async(req, res = response) => {
 
 
     } catch (e) {
+        // Mensajes de error en consola y por JSON
         console.log(e);
-        res.json({
+        return res.json({
             status: false,
             msg: 'Error al borrar el usuario'
         })
@@ -158,7 +167,7 @@ const deleteUsuario = async(req, res = response) => {
 
 
 
-
+// Export methods
 module.exports = {
     getUsuarios,
     createUsuario,

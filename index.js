@@ -23,7 +23,7 @@ dbConnection();
 
 // Rutas
 app.use('/api/usuarios', require('./routes/usuarios.js'));
-
+app.use('/api/auth', require('./routes/auth.js'));
 
 // Controlar el puerto donde se corre el servidor
 app.listen(process.env.port, () => {
