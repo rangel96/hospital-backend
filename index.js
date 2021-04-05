@@ -22,8 +22,12 @@ dbConnection();
 
 
 // Rutas
-app.use('/api/usuarios', require('./routes/usuarios.js'));
-app.use('/api/auth', require('./routes/auth.js'));
+app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/hospitales', require('./routes/hospitales'));
+app.use('/api/medicos', require('./routes/medicos'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/busquedas', require('./routes/searchs'));
+app.use('/api/upload', require('./routes/uploads'));
 
 // Controlar el puerto donde se corre el servidor
 app.listen(process.env.port, () => {

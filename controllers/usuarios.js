@@ -7,18 +7,29 @@ const UsuarioI = require('../models/usuario');
 const { generateJWT } = require("../helpers/jwt");
 
 
-const getUsuarios = async(req, res) => {
+// Methods
+const getUsuarios = async (req, res) => {
 
-    const usuarios = await UsuarioI.find({}, 'uid nombre email password role');
+    // Catch 'desde' de la query
+    const desde = Number(req.query.desde) || 0;
+
+    const [usuarios, total] = await Promise.all([
+        UsuarioI
+            .find({}, 'uid nombre email password role')
+            .skip(desde)
+            .limit(5),
+
+        UsuarioI.countDocuments()
+    ]);
 
     res.json({
         status: true,
         msg: 'Lista de usuarios',
-        data: usuarios
+        data: [usuarios, total]
     })
 };
 
-const createUsuario = async(req, res = response) => {
+const createUsuario = async (req, res = response) => {
 
     const { password, email } = req.body;
 
@@ -46,7 +57,7 @@ const createUsuario = async(req, res = response) => {
 
         // Mensaje tipo JSON
         res.json({
-            status:true,
+            status: true,
             msg: 'Crear usuario',
             data: usuario,
             token
@@ -55,7 +66,7 @@ const createUsuario = async(req, res = response) => {
         // Mensajes de error en consola y por JSON
         console.log(e);
         return res.json({
-            status:false,
+            status: false,
             msg: 'Ocurrió un error al registrar al usuario',
         });
     }
@@ -63,7 +74,7 @@ const createUsuario = async(req, res = response) => {
 
 };
 
-const updateUsuario = async(req, res = response) => {
+const updateUsuario = async (req, res = response) => {
 
     // Extraemos el parametro id
     const uid = req.params.id;
@@ -73,10 +84,10 @@ const updateUsuario = async(req, res = response) => {
         // Verificar que el usuario existe en la BD por busqueda del id
         const usuarioExiste = await UsuarioI.findById(uid);
         if (!usuarioExiste) {
-        return res.json({
-            status:false,
-            msg: 'El id no se encuentra en la BD',
-        });
+            return res.json({
+                status: false,
+                msg: 'El id no se encuentra en la BD',
+            });
         }
 
         // TODO: Validar token y comprobar si es el usuario correcto
@@ -115,8 +126,8 @@ const updateUsuario = async(req, res = response) => {
     } catch (e) {
         // Mensajes de error en consola y por JSON
         console.log(e);
-         return res.json({
-            status:false,
+        return res.json({
+            status: false,
             msg: 'Ocurrió un error al actualizar el usuario',
         });
     }
@@ -124,7 +135,7 @@ const updateUsuario = async(req, res = response) => {
 
 };
 
-const deleteUsuario = async(req, res = response) => {
+const deleteUsuario = async (req, res = response) => {
 
     // Obtener el id del parametro
     const uid = req.params.id;
@@ -135,7 +146,7 @@ const deleteUsuario = async(req, res = response) => {
         const usuarioExiste = await UsuarioI.findById(uid);
         if (!usuarioExiste) {
             return res.json({
-                status:false,
+                status: false,
                 msg: 'El id no se encuentra en la BD',
             });
         }
@@ -162,9 +173,6 @@ const deleteUsuario = async(req, res = response) => {
 
 
 };
-
-
-
 
 
 // Export methods
