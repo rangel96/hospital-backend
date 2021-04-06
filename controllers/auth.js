@@ -49,8 +49,7 @@ const login = async(req, res= response) => {
         console.log(e);
         return res.json({
             status: false,
-            msg: 'Error al autenticar al usuario',
-            data: e.error
+            msg: 'Error al autenticar al usuario'
         })
     }
 };

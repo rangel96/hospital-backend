@@ -22,7 +22,6 @@ router.get('/', validJWT, getHospitales);
 router.post('/', [
         validJWT,
         check('nombre', 'El nombre es obligatorio').notEmpty(),
-        check('img', 'La imagen es obligatoria').notEmpty(),
         validCampos,
 
     ],
@@ -31,7 +30,6 @@ router.post('/', [
 router.put('/:id', [
         validJWT,
         check('nombre', 'El nombre es obligatorio').notEmpty(),
-        check('img', 'La imagen es obligatoria').notEmpty(),
         validCampos
     ],
     updateHospital);

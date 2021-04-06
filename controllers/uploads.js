@@ -1,16 +1,20 @@
 // Import packs installs
 const { response } = require('express');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const fs = require('fs');
 
 // Import packs creates
-const UsuarioI = require('../models/usuario');
+const { imgUpload } = require('../helpers/upload-file');
 
 
 // Methods
-const fileUpload = async (req, res = response) => {
+const uploadFile = async (req, res = response) => {
 
     // Catch 'tipo' y 'id' de params (URL)
     const tipo = req.params.tipo;
     const id = req.params.id;
+
 
     // Validar el tipo
     const tipoValid = ['usuarios', 'hospitales', 'medicos'];
@@ -21,8 +25,6 @@ const fileUpload = async (req, res = response) => {
         });
     }
 
-    // Validad ID
-    console.log(req.files);
 
     // Validar archivo
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -33,23 +35,86 @@ const fileUpload = async (req, res = response) => {
     }
 
 
-    res.json({
-        status: true,
-        msg: 'Upload file',
-        data: {tipo, id}
-    })
+    // Procesar la imagen
+    const file = req.files.img;
+
+
+    // Obtener extensión del archivo
+    const extraerNombre = file.name.split('.');
+    const extensionArchivo = extraerNombre[extraerNombre.length - 1];
+
+
+    // Validar extensión
+    const extensionsValids = ['png', 'jpg', 'jpeg', 'gif'];
+    if (!extensionsValids.includes(extensionArchivo)) {
+        return res.json({
+            status: false,
+            msg: 'Tipo de archivo no permitido'
+        });
+    }
+
+
+    // Generar el nombre del archivo
+    const nameFile = `${uuidv4()}.${extensionArchivo}`;
+
+
+    // Path para guardar la imagen
+    const path = `./uploads/${tipo}`;
+
+
+    // Mover la imagen
+    await file.mv(`${path}/${nameFile}`, (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                status: false,
+                msg: 'Error al mover la imagen'
+            });
+        }
+
+
+        // Actualizar la BD
+        imgUpload(tipo, id, path, nameFile);
+
+
+        // Mensaje tipo JSON
+        res.json({
+            status: true,
+            msg: 'Archivo subido',
+            data: nameFile
+        });
+    });
+
+};
+
+const  getFile = async (req, res = response) => {
+
+    // Catch 'tipo' y 'id' de params (URL)
+    const tipo = req.params.tipo;
+    const img = req.params.img;
+
+
+    // Get path de la imagen
+    let pathImg = path.join(__dirname, `../uploads/${tipo}/${img}`);
+
+
+    // Validar que el nombre coincida
+    if (fs.existsSync(pathImg)) {
+        // Mandar archivo
+        res.sendFile(pathImg);
+    } else {
+        // Send Img default
+        pathImg = path.join(__dirname, '../assets/img/no-image.png');
+        res.sendFile(pathImg);
+    }
 
 
 };
 
 
 
-
-
-
-
-
 // Export methods
 module.exports = {
-    fileUpload,
+    uploadFile,
+    getFile
 };

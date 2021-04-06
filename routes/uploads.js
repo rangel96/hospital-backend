@@ -3,32 +3,30 @@
 * */
 // Paquetes
 const { Router } = require('express');
-const { check } = require('express-validator');
-const FileUpload = require('express-fileupload');
+// const { check } = require('express-validator');
+const expressFileUpload = require('express-fileupload');
 
 // Validators
 const { validJWT } = require("../middlewares/valid-jwt");
-const { validCampos } = require('../middlewares/valid-campos');
+// const { validCampos } = require('../middlewares/valid-campos');
 
 // Import Controllers
-const { fileUpload } = require('../controllers/uploads');
+const { uploadFile, getFile } = require('../controllers/uploads');
 
 
 const router = Router();
 
-// default options
-router.use(FileUpload({
-    useTempFiles : true,
-    tempFileDir : '/tmp/'
+// Middleware
+router.use(expressFileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
 }));
 
 
 // Controllers
-router.put('/:tipo/:id', validJWT, fileUpload);
+router.put('/:tipo/:id', validJWT, uploadFile);
 
-
-
-
+router.get('/:tipo/:img', validJWT, getFile);
 
 
 // Export routs

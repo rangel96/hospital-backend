@@ -129,7 +129,7 @@ const deleteHospital = async(req, res = response) => {
     try {
 
         // Verificar si existe un hospital con ese id
-        const existeHospital = await HospitalI.findById({ hid });
+        const existeHospital = await HospitalI.findById({ _id: hid });
         if (!existeHospital) {
             // Mensaje de error tipo JSON
             return res.json({
