@@ -20,6 +20,9 @@ app.use(express.json());
 // Coneción a la base de datos
 dbConnection();
 
+// Directorio publico
+app.use(express.static('public'));
+
 
 
 // Rutas
