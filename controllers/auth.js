@@ -109,7 +109,7 @@ const googleSignIn = async(req, res= response) => {
             msg: `Usuario ${name} creado con Google`,
             data: usuario,
             token
-        })
+        });
 
     } catch (e) {
         // Mensajes de error en consola y por JSON
@@ -121,6 +121,24 @@ const googleSignIn = async(req, res= response) => {
     }
 };
 
+const renewToken = async (req, res = response) => {
+
+    // Extraer UID del token
+    const uid = req.uid;
+
+    // Generate JWT
+    const token = await generateJWT(uid);
+
+    // Mensaje de satisfacción tipo JSON
+    res.json({
+        status: true,
+        msg: 'Token renovado',
+        data: uid,
+        token
+    });
+
+};
+
 
 
 
@@ -129,5 +147,6 @@ const googleSignIn = async(req, res= response) => {
 // Export methods
 module.exports = {
     login,
-    googleSignIn
+    googleSignIn,
+    renewToken
 };

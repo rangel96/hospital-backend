@@ -1,4 +1,4 @@
 # Carpetas
 node_modules/
 .idea/
-uploads/
+uploads/*

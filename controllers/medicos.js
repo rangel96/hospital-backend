@@ -78,18 +78,29 @@ const createMedico = async (req, res = response) => {
 
 const updateMedico = async (req, res = response) => {
 
-    // Catch el id de la url
-    const { mid } = req.params.id;
+    // Catch el id de la url y el id del hospital en el body
+    const _id = req.params.id;
+    const hid  = req.body.hospital;
 
     try {
 
-        // Verificar si existe un medico con ese nombre
-        const existeMedico = await MedicoI.findById({ mid });
+        // Verificar si existe un medico con ese id
+        const existeMedico = await MedicoI.findById(_id);
         if (!existeMedico) {
             // Mensaje de error tipo JSON
             return res.json({
                 status: false,
                 msg: 'El Medico No esta registrado'
+            });
+        }
+
+        // Verificar si existe un hospital con ese id
+        const existeHospital = await HospitalI.findById({ _id: hid });
+        if (!existeHospital) {
+            // Mensaje de error tipo JSON
+            return res.json({
+                status: false,
+                msg: 'El Hospital No esta registrado'
             });
         }
 
@@ -102,18 +113,20 @@ const updateMedico = async (req, res = response) => {
                 // Mensaje de error tipo JSON
                 return res.json({
                     status: false,
-                    msg: 'Existe un registro con ese nombre'
+                    msg: 'Existe un médico con ese nombre'
                 });
             }
         }
 
-        // Eliminar _id, password y google del objeto campos
+
+        // Eliminar _id y usuario, agregar el nuevo id de hospital
         delete campos._doc._id;
         delete campos._doc.usuario;
-        delete campos._doc.hospital;
+        campos._doc.hospital = hid;
+
 
         // Actualizar usuario en la BD
-        const updateMedico = await MedicoI.findByIdAndUpdate(mid, campos, { new: true });
+        const updateMedico = await MedicoI.findByIdAndUpdate(_id, campos, { new: true });
 
 
         // Mensaje tipo JSON
@@ -128,7 +141,7 @@ const updateMedico = async (req, res = response) => {
         console.log(e);
         return res.json({
             status: false,
-            msg: 'Ocurrió un error al registrar al medico',
+            msg: 'Ocurrió un error al actualizar al medico',
         });
     }
 

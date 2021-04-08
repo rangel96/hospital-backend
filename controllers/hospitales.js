@@ -67,7 +67,7 @@ const createHospital = async(req, res = response) => {
 const updateHospital = async(req, res = response) => {
 
     // Catch el id de la url
-    const { hid } = req.params.id;
+    const hid = req.params.id;
 
     try {
 
@@ -110,12 +110,13 @@ const updateHospital = async(req, res = response) => {
             data: updateHospital
         });
 
-    } catch (e) {
+    }
+    catch (e) {
         // Mensajes de error en consola y por JSON
         console.log(e);
         return res.json({
             status: false,
-            msg: 'Ocurrió un error al registrar al hospital',
+            msg: 'Ocurrió un error al actualizar - Hospital',
         });
     }
 

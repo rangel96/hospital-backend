@@ -10,7 +10,7 @@ const { validJWT } = require("../middlewares/valid-jwt");
 const { validCampos } = require('../middlewares/valid-campos');
 
 // Import Controllers
-const { login, googleSignIn } = require('../controllers/auth');
+const { login, googleSignIn, renewToken } = require('../controllers/auth');
 
 
 const router = Router();
@@ -21,12 +21,14 @@ router.post('/login', [
     check('email', 'El email es obligatorio').notEmpty().isEmail(),
     check('password', 'El password es obligatorio').notEmpty(),
     validCampos
-], login)
+], login);
 
 router.post('/google', [
     check('token', 'El token de Google es obligatorio').notEmpty(),
     validCampos
-], googleSignIn)
+], googleSignIn);
+
+router.get('/renewToken', validJWT, renewToken);
 
 
 // Export Routes
