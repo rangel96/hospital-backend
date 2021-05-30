@@ -9,7 +9,7 @@ const MedicoI = require('../models/medicos');
 
 
 
-const imgUpload = async(tipo, id, path, nameFile) => {
+const imgUpload = async(tipo, _id, path, nameFile) => {
 
     let data;
     let pathOld;
@@ -17,21 +17,21 @@ const imgUpload = async(tipo, id, path, nameFile) => {
     switch (tipo) {
         case 'usuarios':
             // Busqueda de la palabra en la BD
-            data = await UsuarioI.findById({ _id: id });
+            data = await UsuarioI.findById({ _id });
             pathOld = `${ path }/${ data.img }`;
             await saveFile(data, pathOld, nameFile);
             break;
 
         case 'hospitales':
             // Busqueda de la palabra en la BD
-            data = await HospitalI.findById({ _id: id });
+            data = await HospitalI.findById({ _id });
             pathOld = `${ path }/${ data.img }`;
             await saveFile(data, pathOld, nameFile);
             break;
 
         case 'medicos':
             // Busqueda de la palabra en la BD
-            data = await MedicoI.findById({ _id: id });
+            data = await MedicoI.findById({ _id });
             pathOld = `${ path }/${ data.img }`;
             await saveFile(data, pathOld, nameFile);
             break;

@@ -24,7 +24,7 @@ router.use(expressFileUpload({
 // Controllers
 router.put('/:tipo/:id', validJWT, uploadFile);
 
-router.get('/:tipo/:img', validJWT, getFile);
+router.get('/:tipo/:img', getFile);
 
 
 // Export routs

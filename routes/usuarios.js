@@ -10,7 +10,7 @@ const { validJWT } = require("../middlewares/valid-jwt");
 const { validCampos } = require('../middlewares/valid-campos');
 
 // Import Controllers
-const { getUsuarios, createUsuario, updateUsuario, deleteUsuario } = require('../controllers/usuarios');
+const { getUsuarios, getById, createUsuario, updateUsuario, deleteUsuario } = require('../controllers/usuarios');
 
 
 const router = Router();
@@ -18,6 +18,8 @@ const router = Router();
 
 // Controllers
 router.get('/', validJWT, getUsuarios);
+
+router.get('/:id', validJWT, getById);
 
 router.post('/', [
         check('nombre', 'El nombre es obligatorio').notEmpty(),

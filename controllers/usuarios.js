@@ -33,6 +33,26 @@ const getUsuarios = async (req, res) => {
     })
 };
 
+const getById = async (req, res) => {
+
+    // Catch el id de la url
+    const uid = req.params.id;
+
+    // Busqueda del Usuario
+    const usuario = await UsuarioI.findById({ _id: uid } )
+
+    // Eliminación de UID
+    delete usuario.uid;
+
+    // console.log(usuario);
+    res.json({
+    status: true,
+    msg: 'Usuario',
+    data: usuario,
+    });
+
+};
+
 const createUsuario = async (req, res = response) => {
 
     const { password, email } = req.body;
@@ -98,7 +118,8 @@ const updateUsuario = async (req, res = response) => {
 
 
         // Limpiar el body, verificar que el email no se repita en la BD
-        const { password, google, email, ...campos } = new UsuarioI(req.body);
+        // const { password, google, email, ...campos } = new UsuarioI(req.body);
+        const { password, google, email, ...campos } = req.body;
         if (usuarioExiste.email !== email) {
             // Verificar si el email nuevo existe en la BD
             const existeEmail = await UsuarioI.findOne({ email });
@@ -111,10 +132,15 @@ const updateUsuario = async (req, res = response) => {
             }
         }
 
-        // Eliminar _id, password y google del objeto campos
-        delete campos._doc._id;
-        delete campos._doc.password;
-        delete campos._doc.google;
+
+        // Si es usuario de Google negar actualizar el email
+        (!usuarioExiste.google)
+            ? campos.email = email
+            : res.json({
+                status: false,
+                msg: 'Actualizar el email negado, usuario de google'
+            });
+
 
         // Actualizar usuario en la BD
         const updateUsuario = await UsuarioI.findByIdAndUpdate(uid, campos, { new: true });
@@ -182,6 +208,7 @@ const deleteUsuario = async (req, res = response) => {
 // Export methods
 module.exports = {
     getUsuarios,
+    getById,
     createUsuario,
     updateUsuario,
     deleteUsuario
