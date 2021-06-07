@@ -4,8 +4,9 @@ const encrypt = require('bcryptjs');
 
 // Import packs generates
 const UsuarioI = require('../models/usuario');
-const { generateJWT } = require("../helpers/jwt");
-const { googleVerify } = require("../helpers/google-verify");
+const { generateJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
+const { getMenu } = require('../helpers/menu-frontend');
 
 
 // Methods
@@ -38,12 +39,13 @@ const login = async(req, res= response) => {
         // Generate JWT
         const token = await generateJWT(usuario.id);
 
-        // Mensaje de satisfacción tipo JSON
+        // Mensaje de satisfacción tipo JYSON
         res.json({
             status: true,
             msg: 'Inicio de sesión correcto',
             data: usuario,
-            token
+            token,
+            menu: getMenu(usuario.role)
         })
 
     } catch (e) {
@@ -85,7 +87,8 @@ const googleSignIn = async(req, res= response) => {
                 status: true,
                 msg: 'Google Sign-In',
                 data: usuario,
-                token
+                token,
+                menu: getMenu(usuario.role)
             });
         }
 
@@ -108,7 +111,8 @@ const googleSignIn = async(req, res= response) => {
             status: true,
             msg: `Usuario ${name} creado con Google`,
             data: usuario,
-            token
+            token,
+            menu: getMenu(usuario.role)
         });
 
     } catch (e) {
@@ -140,7 +144,8 @@ const renewToken = async (req, res = response) => {
         status: true,
         msg: 'Token renovado',
         data: usuario,
-        token
+        token,
+        menu: getMenu(usuario.role)
     });
 
 };

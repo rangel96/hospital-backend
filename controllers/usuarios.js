@@ -38,7 +38,15 @@ const getById = async (req, res) => {
     const uid = req.params.id;
 
     // Busqueda del Usuario
-    const usuario = await UsuarioI.findById({ _id: uid } )
+    const usuario = await UsuarioI.findById({ _id: uid } );
+
+    // Preguntar si el usuario existe
+    if (!usuario) {
+        res.json({
+            status: false,
+            msg: 'El usuario no se encontró en la base de datos',
+        });
+    }
 
     // Eliminación de UID
     delete usuario.uid;

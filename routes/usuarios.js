@@ -6,7 +6,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 // Validators
-const { validJWT } = require("../middlewares/valid-jwt");
+const { validJWT, validRole } = require("../middlewares/valid-jwt");
 const { validCampos } = require('../middlewares/valid-campos');
 
 // Import Controllers
@@ -25,13 +25,12 @@ router.post('/', [
         check('nombre', 'El nombre es obligatorio').notEmpty(),
         check('password', 'El password es obligatorio').notEmpty(),
         check('email', 'El email es obligatorio').notEmpty().isEmail(),
-        validCampos,
-
+        validCampos
     ],
     createUsuario);
 
 router.put('/:id', [
-        validJWT,
+        validJWT, validRole,
         check('nombre', 'El nombre es obligatorio').notEmpty(),
         check('email', 'El email es obligatorio').notEmpty().isEmail(),
         check('role', 'El role es obligatorio').notEmpty(),
@@ -39,7 +38,7 @@ router.put('/:id', [
     ],
     updateUsuario);
 
-router.delete('/:id', validJWT, deleteUsuario);
+router.delete('/:id', [validJWT, validRole], deleteUsuario);
 
 
 // Export routs
