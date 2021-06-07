@@ -10,7 +10,7 @@ const { validJWT } = require("../middlewares/valid-jwt");
 const { validCampos } = require('../middlewares/valid-campos');
 
 // Import Controllers
-const { getMedicos, createMedico, updateMedico, deleteMedico } = require('../controllers/medicos');
+const { getMedicos, getByIdMedico, createMedico, updateMedico, deleteMedico } = require('../controllers/medicos');
 
 
 const router = Router();
@@ -19,17 +19,19 @@ const router = Router();
 // Controllers
 router.get('/', validJWT, getMedicos);
 
+router.get('/:id', validJWT, getByIdMedico);
+
 router.post('/', [
     validJWT,
     check('nombre', 'El nombre es obligatorio').notEmpty(),
-    check('hospital', 'El hospital id debe ser valido').isMongoId(),
+    check('hid', 'El id del hospital debe ser válido').isMongoId(),
     validCampos
 ], createMedico);
 
 router.put('/:id', [
     validJWT,
     check('nombre', 'El nombre es obligatorio').notEmpty(),
-    check('hospital', 'El hospital id debe ser valido').isMongoId(),
+    check('hid', 'El id del hospital debe ser válido').isMongoId(),
     validCampos
 ], updateMedico);
 

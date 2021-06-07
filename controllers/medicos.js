@@ -23,10 +23,39 @@ const getMedicos = async (req, res = response) => {
 
 };
 
+const getByIdMedico = async (req, res = response) => {
+
+    // Catch el id de la url y el id del hospital en el body
+    const _id = req.params.id;
+
+    try {
+        const medico = await MedicoI.findById({ _id }, 'mid nombre img usuario hospital')
+            .populate('usuario', 'nombre img')
+            .populate('hospital', 'nombre img');
+
+
+        res.json({
+            status: true,
+            msg: 'Medico obtenido correctamente',
+            data: medico,
+        })
+    } catch (e) {
+        // Mensajes de error en consola y por JSON
+        console.log(e);
+        return res.json({
+            status: false,
+            msg: 'Ocurrió un error al obtener el medico',
+        });
+    }
+
+
+
+};
+
 const createMedico = async (req, res = response) => {
 
     // Desestructuracion del body
-    const { nombre, hospital } = req.body;
+    const { nombre, hid } = req.body;
     const uid = req.uid;
 
     try {
@@ -41,8 +70,8 @@ const createMedico = async (req, res = response) => {
             });
         }
 
-        // Verificar si existe un medico con ese nombre
-        const existeHospital = await HospitalI.findById(hospital);
+        // Verificar si existe un Hospital con ese hid
+        const existeHospital = await HospitalI.findById(hid);
         if (!existeHospital) {
             // Mensaje de error tipo JSON
             return res.json({
@@ -54,6 +83,7 @@ const createMedico = async (req, res = response) => {
         // Guardar medico en la BD
         const medico = new MedicoI({
             usuario: uid,
+            hospital: hid,
             ...req.body
         });
         await medico.save();
@@ -80,7 +110,7 @@ const updateMedico = async (req, res = response) => {
 
     // Catch el id de la url y el id del hospital en el body
     const _id = req.params.id;
-    const hid  = req.body.hospital;
+    const hid  = req.body.hid;
 
     try {
 
@@ -105,7 +135,7 @@ const updateMedico = async (req, res = response) => {
         }
 
         // Verificar que el nombre del medico no se repita
-        const { nombre, ...campos } = new MedicoI(req.body);
+        const { nombre, ...campos } = req.body;
         if (existeMedico.nombre !== nombre) {
             // Verificar si el nombre nuevo existe en la BD
             const replyName = await MedicoI.findOne({ nombre });
@@ -118,11 +148,8 @@ const updateMedico = async (req, res = response) => {
             }
         }
 
-
-        // Eliminar _id y usuario, agregar el nuevo id de hospital
-        delete campos._doc._id;
-        delete campos._doc.usuario;
-        campos._doc.hospital = hid;
+        campos.hospital = hid;
+        delete campos.hid;
 
 
         // Actualizar usuario en la BD
@@ -189,6 +216,7 @@ const deleteMedico = async (req, res = response) => {
 // Export methods
 module.exports = {
     getMedicos,
+    getByIdMedico,
     createMedico,
     updateMedico,
     deleteMedico

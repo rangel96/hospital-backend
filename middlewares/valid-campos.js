@@ -9,7 +9,8 @@ const validCampos = (req, res = response, next) => {
     if (!errores.isEmpty()) {
         return res.json({
             status: false,
-            Errors: errores.mapped()
+            msg: 'Tienes campos por llenar o revisa que sean válidos',
+            errors: errores.mapped()
         })
     }
 

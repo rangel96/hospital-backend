@@ -13,11 +13,10 @@ const getUsuarios = async (req, res) => {
     // Catch 'desde' de la query
     const desde = Number(req.query.desde) || 0;
     const items = Number(req.query.items) || 5;
-    console.log(items);
 
     const [usuarios, total] = await Promise.all([
         UsuarioI
-            .find({}, 'uid nombre email password role img')
+            .find({}, 'uid nombre email password role img google')
             .skip(desde)
             .limit(items),
 
