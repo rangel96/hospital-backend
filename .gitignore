@@ -1,5 +1,7 @@
 # Carpetas
 node_modules/
 .idea/
-uploads/*
+uploads/hospitales/*
+uploads/medicos/*
+uploads/usuarios/*
 hospital-backend-adminpro/

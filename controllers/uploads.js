@@ -1,11 +1,12 @@
 // Import packs installs
 const { response } = require('express');
 const { v4: uuidv4 } = require('uuid');
+const cloudinary = require('cloudinary').v2;
 const path = require('path');
 const fs = require('fs');
 
 // Import packs creates
-const { imgUpload } = require('../helpers/upload-file');
+const { imgUpload, imgCloudinary } = require('../helpers/upload-file');
 
 
 // Methods
@@ -54,16 +55,47 @@ const uploadFile = async (req, res = response) => {
     }
 
 
+    //* * Carga de archivo en Cloudinary * *//
+    const { url, public_id, format } = await cloudinary.uploader.upload(file.tempFilePath, (error, result) => {
+
+        if (error) {
+            console.warn(error);
+            return res.json({
+                status: false,
+                msg: 'Error al subir el archivo a Cloudinary',
+                error
+            });
+        }
+
+    });
+
+
+    // Actualizar la BD
+    (await imgCloudinary(tipo, id, url))
+    ? res.json({
+            status: true,
+            msg: 'Archivo subido',
+            data: `${ public_id }.${ format }`
+      })
+    : res.json({
+            status: false,
+            msg: 'Error al subir el archivo a Cloudinary'
+      });
+
+
+
+
+    //* * Carga de archivo en Servidor Local * *//
     // Generar el nombre del archivo
-    const nameFile = `${uuidv4()}.${extensionArchivo}`;
+    // const nameFile = `${uuidv4()}.${extensionArchivo}`;
 
 
     // Path para guardar la imagen
-    const path = `./uploads/${tipo}`;
+    // const path = `./uploads/${tipo}`;
 
 
     // Mover la imagen
-    await file.mv(`${path}/${nameFile}`, (err) => {
+    /*await file.mv(`${path}/${nameFile}`, (err) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -83,7 +115,7 @@ const uploadFile = async (req, res = response) => {
             msg: 'Archivo subido',
             data: nameFile
         });
-    });
+    });*/
 
 };
 
